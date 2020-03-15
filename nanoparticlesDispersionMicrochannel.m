@@ -65,8 +65,76 @@ Drag_x = zeros(np,it);
 Drag_y = zeros(np,it);
 
 % Saffman lift force Storage
-Safmanstore = zeros(np,it);
+Saffmanstore = zeros(np,it);
 
 % Added mass (negligible)-(not included in u and v velocities)
 Addedmass_x = zeros(np,it);
 Addedmass_y = zeros(np,it);
+
+for i=1:np
+    j=1;              % Initial step
+    Xp_old = 0;       % Initial x-pos of particle
+    Yp_old = 0;       % Initial y-pos of particle
+    Up_old = max(UF); % Initial u-vel of particle
+    Vp_old = 0;       % Initial v-vel of particle
+    
+    vel_u(i,j)=Up_old;% Storing
+    vel_v(i,j)=Vp_old;
+    
+    j=2;              % Second Step
+    while (Xp_old<=20*H && abs(Yp_old)<0.95*H) % Reching end of channel or getting close to the wall
+        % Brownian force (randomly generated)
+        Brfx = Mp*randn*sqrt(pi*s_nn/dt);
+        Brfy = Mp*randn*sqrt(pi*s_nn/dt);
+        
+        % Fluid velocity at certain y location. uf(Yp-old).
+        uf = (H^2/(2*mu))*(-dp_dx)*(1-(Yp_old/H)^2+8*(2/sigma-1)*Kn);
+        
+        % Added mass force
+        FAdX = Mp*18*Ma*nu/(d^2)*(uf-Up_old); 
+        FAdY = Mp*18*Ma*nu/(d^2)*(-Vp_old);
+        
+        % Particle u-velocity from newton law. x-dir
+        Up_new = (1/(1+dt/tow)) * ( Up_old+ ((dt/tow) *uf) + dt*(Brfx/Mp));
+        
+        % Step in x-pos
+        Xp_new = Xp_old+dt*Up_new;
+        % Store the new x-position
+        pos_x(i,j) = Xp_new;
+        % Store the new u-velocity
+        vel_u(i,j) = Up_new;
+        % Store the Drag x-force
+        Drag_x(i,j) = (Mp/tow) * (uf-Up_new);
+        
+        % Calculate the Saffman lift force. Based on particle u-velocity
+        f_saf = 1.615*Ro_f*nu^.5*d^2*(uf-Up_new)*sqrt(abs((H^2/(2*mu))*(-dp_dx)*(-2*Yp_old/H^2)))*sign((H^2/(2*mu))*(-dp_dx)*(-2*Yp_old/H^2));
+        Saffmanstore(i,j) = f_saf; % Storing Saffman force
+        
+        % Particle v-velocity from newton law. y-dir
+        Vp_new = (1/(1+dt/tow)) * (Vp_old + dt*( (Brfy/Mp) + f_saf + (g*Ro_f/Ro_p) - g ) );
+        % Step in y-pos
+        Yp_new = Yp_old+dt*Vp_new;
+        % Store the new y-position
+        pos_y(i,j) = Yp_new;
+        % Store the new v-velocity
+        vel_v(i,j)= Vp_new;
+        % Store the Drag v-force
+        Drag_y(i,j)= (Mp/tow) * (Vp_new);
+        
+        % Store the Brownian force
+        BrF_x(i,j) = Brfx;
+        BrF_y(i,j) = Brfy;
+        
+        Addedmass_x(i,j) = FAdX;
+        Addedmass_y(i,j) = FAdY;    
+        
+        Xp_old = Xp_new; % Put new-pos into the old-pos for next iteration
+        Yp_old = Yp_new;
+        Up_old = Up_new;
+        Vp_old = Vp_new;
+        
+        n(1,i)=n(1,i)+1; % Counting the number of steps eacg particle pass
+        j=j+1; % Going to next time step or iteration
+        
+    end
+end
