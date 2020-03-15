@@ -138,3 +138,33 @@ for i=1:np
         
     end
 end
+
+% The particles path
+figure(2)
+for i=1:np
+   hold on
+   plot(pos_x(i,1:n(i)),pos_y(i,1:n(i)))
+end
+
+% Position history of particle #1 1
+P1_s = pos_x(1,1:n(1));
+
+figure(3)
+plot(P1_s, BrF_x(1,1:n(1)))
+title('Brownian Force_X')
+
+figure(4)
+plot(P1_s, BrF_y(1,1:n(1)))
+title('Brownian Force_Y')
+
+figure(5)
+plot(P1_s, Saffmanstore(1,1:n(1)))
+title('Saffman Lift Force')
+
+figure(6)
+plot(P1_s, Drag_x(1,1:n(1)))
+title('Drag Force x')
+
+figure(7)
+plot(P1_s, Drag_y(1,1:n(1)))
+title('Drag Force y')
