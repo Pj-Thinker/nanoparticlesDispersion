@@ -47,4 +47,26 @@ s_nn=2*k*T/(tow*pi*Mp); % Used in brownian force
 
 dt = 0.01*tow; % Time step
 it = 2000;  % Iteration/steps goint forward in time
-n=zeros(1,np); % Counting steps of each particle
+n = zeros(1,np); % Counting steps of each particle
+
+% Some predefined arrays for results (helps with the code speed)
+% Velocity and position storage
+vel_u = zeros(np,it);
+vel_v = zeros(np,it);
+pos_x = zeros(np,it);
+pos_y = zeros(np,it);
+
+% Brownian storage
+BrF_x = zeros(np,it);
+BrF_y = zeros(np,it);
+
+% Drag force storage
+Drag_x = zeros(np,it);
+Drag_y = zeros(np,it);
+
+% Saffman lift force Storage
+Safmanstore = zeros(np,it);
+
+% Added mass (negligible)-(not included in u and v velocities)
+Addedmass_x = zeros(np,it);
+Addedmass_y = zeros(np,it);

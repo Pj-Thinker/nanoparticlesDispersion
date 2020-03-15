@@ -39,16 +39,38 @@ ylabel('2H (m)')
 legend('Re=100 Kn=0.01')
 
 % Constants and parameters needed
-k=1.38e-23; % Boltzmann constant [j/K]
-T=297;  % Temperature
-Cc=1+2*L/(d)*(1.257+0.4*exp(-1.1*d/(2*L))); % Cunningham correction factor
-tow=Cc*Mp/(3*pi*mu*d); % Particle relaxation time
-dt=0.01*tow; % Time step
-
-
+k = 1.38e-23; % Boltzmann constant [j/K]
+T = 297;  % Temperature
+Cc = 1+2*L/(d)*(1.257+0.4*exp(-1.1*d/(2*L))); % Cunningham correction factor
+tow = Cc*Mp/(3*pi*mu*d); % Particle relaxation time
 s_nn=2*k*T/(tow*pi*Mp); % Used in brownian force
 
+dt = 0.01*tow; % Time step
+it = 2000;  % Iteration/steps goint forward in time
+n = zeros(1,np); % Counting steps of each particle
 
-it=2000;  % Iteration/steps goint forward in time
-% To count how many steps each particle will flow. max is 2000 obviously.
-n=zeros(1,np);
+% Some predefined arrays for results (helps with the code speed)
+% Velocity and position storage
+vel_u = zeros(np,it);
+vel_v = zeros(np,it);
+pos_x = zeros(np,it);
+pos_y = zeros(np,it);
+
+% Brownian storage
+BrF_x = zeros(np,it);
+BrF_y = zeros(np,it);
+
+% Drag storage
+Drag_x = zeros(np,it);
+Drag_y = zeros(np,it);
+
+% Safman Storage
+Safmanstore=zeros(np,it);
+
+% Drag Storage
+DragFstore_x=zeros(np,it);
+DragFstore_y=zeros(np,it);
+
+% Added mass (negligible)-(not included in u and v velocities)
+Addedmassfx=zeros(np,5000);
+Addedmassfy=zeros(np,5000);
